@@ -20,28 +20,36 @@ class Model{
     }
     
     this.todos.push(todo)
+
+    this._commit(this.todos)
   }
 
   editTodo(id, updatedText) {
     this.todos = this.todos.map((todo) =>
-      todo.id === id ? {id: todo.id, text: updatedText, complete: todo.complete} : todo,)
+      todo.id === id ? {id: todo.id, text: updatedText, complete: todo.complete} : todo,
+      )
+
+      this._commit(this.todos)
       }
 
   deleteTodo(id) {
     this.todos = this.todos.filter((todo) => todo.id !== id)
+
+    this._commit(this.todos)
   }
 
   toggleTodo(id) {
     this.todos = this.todos.map((todo) =>
-      todo.id === id ? {id: todo.id, text: todo.text, complete: !todo.complete} : todo,)
+      todo.id === id ? {id: todo.id, text: todo.text, complete: !todo.complete} : todo,
+      )
+    
+      this._commit(this.todos)
   }
 }
 
 class View{
   constructor() {
     this.app = this.getElement('#root')
-    this.title = this.createElement('h1')
-    this.title.textContent = 'Todos'
     this.form = this.createElement('form')
     this.input = this.createElement('input')
     this.input.type = 'text'
@@ -49,8 +57,10 @@ class View{
     this.input.name = 'todo'
     this.submitButton = this.createElement('button')
     this.submitButton.textContent = 'Submit'
-    this.todoList = this.createElement('ul', 'todo-list')        
     this.form.append(this.input, this.submitButton)
+    this.title = this.createElement('h1')
+    this.title.textContent = 'Todos'
+    this.todoList = this.createElement('ul', 'todo-list')
     this.app.append(this.title, this.form, this.todoList)
 
     this._temporaryTodoText = ''
@@ -71,9 +81,9 @@ class View{
 
     if (className) element.classList.add(className)
 
-     return element
+    return element
   }
-  
+
   // Retrieve an element from the DOM
   getElement(selector) {
     const element = document.querySelector(selector)
@@ -137,29 +147,19 @@ class View{
   bindAddTodo(handler) {
     this.form.addEventListener('submit', event => {
       event.preventDefault()
-      
+
       if (this._todoText) {
         handler(this._todoText)
         this._resetInput()
       }
     })
   }
-      
+
   bindDeleteTodo(handler) {
     this.todoList.addEventListener('click', event => {
       if (event.target.className === 'delete') {
         const id = parseInt(event.target.parentElement.id)
-      
-        handler(id)
-      }
-    })
-  }
-      
-  bindToggleTodo(handler) {
-    this.todoList.addEventListener('change', event => {
-      if (event.target.type === 'checkbox') {
-        const id = parseInt(event.target.parentElement.id)
-      
+
         handler(id)
       }
     })
@@ -169,9 +169,19 @@ class View{
     this.todoList.addEventListener('focusout', event => {
       if (this._temporaryTodoText) {
         const id = parseInt(event.target.parentElement.id)
-  
+
         handler(id, this._temporaryTodoText)
         this._temporaryTodoText = ''
+      }
+    })
+  }
+
+  bindToggleTodo(handler) {
+    this.todoList.addEventListener('change', event => {
+      if (event.target.type === 'checkbox') {
+        const id = parseInt(event.target.parentElement.id)
+
+        handler(id)
       }
     })
   }
