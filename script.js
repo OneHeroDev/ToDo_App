@@ -1,4 +1,4 @@
-class Model{
+class Model {
   constructor() {
     this.todos = JSON.parse(localStorage.getItem('todos')) || []
   }
@@ -6,7 +6,7 @@ class Model{
   bindTodoListChanged(callback) {
     this.onTodoListChanged = callback
   }
-  
+
   _commit(todos) {
     this.onTodoListChanged(todos)
     localStorage.setItem('todos', JSON.stringify(todos))
@@ -15,39 +15,39 @@ class Model{
   addTodo(todoText) {
     const todo = {
       id: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1,
-        text: todoText,
-        complete: false,
+      text: todoText,
+      complete: false,
     }
-    
+
     this.todos.push(todo)
 
     this._commit(this.todos)
   }
 
   editTodo(id, updatedText) {
-    this.todos = this.todos.map((todo) =>
-      todo.id === id ? {id: todo.id, text: updatedText, complete: todo.complete} : todo,
-      )
+    this.todos = this.todos.map(todo =>
+      todo.id === id ? { id: todo.id, text: updatedText, complete: todo.complete } : todo
+    )
 
-      this._commit(this.todos)
-      }
+    this._commit(this.todos)
+  }
 
   deleteTodo(id) {
-    this.todos = this.todos.filter((todo) => todo.id !== id)
+    this.todos = this.todos.filter(todo => todo.id !== id)
 
     this._commit(this.todos)
   }
 
   toggleTodo(id) {
-    this.todos = this.todos.map((todo) =>
-      todo.id === id ? {id: todo.id, text: todo.text, complete: !todo.complete} : todo,
-      )
-    
-      this._commit(this.todos)
+    this.todos = this.todos.map(todo =>
+      todo.id === id ? { id: todo.id, text: todo.text, complete: !todo.complete } : todo
+    )
+
+    this._commit(this.todos)
   }
 }
 
-class View{
+class View {
   constructor() {
     this.app = this.getElement('#root')
     this.form = this.createElement('form')
@@ -70,12 +70,11 @@ class View{
   get _todoText() {
     return this.input.value
   }
-     
+
   _resetInput() {
     this.input.value = ''
   }
 
-  // Create an element with an optional CSS class
   createElement(tag, className) {
     const element = document.createElement(tag)
 
@@ -84,7 +83,6 @@ class View{
     return element
   }
 
-  // Retrieve an element from the DOM
   getElement(selector) {
     const element = document.querySelector(selector)
 
@@ -94,16 +92,16 @@ class View{
   displayTodos(todos) {
     // Delete all nodes
     while (this.todoList.firstChild) {
-      his.todoList.removeChild(this.todoList.firstChild)
+      this.todoList.removeChild(this.todoList.firstChild)
     }
 
     // Show default message
     if (todos.length === 0) {
       const p = this.createElement('p')
-      p.textContent = 'Nothing To Do! Add A task?'
+      p.textContent = 'Nothing to do! Add a task?'
       this.todoList.append(p)
     } else {
-      // Create todo item nodes
+      // Create nodes
       todos.forEach(todo => {
         const li = this.createElement('li')
         li.id = todo.id
@@ -128,6 +126,7 @@ class View{
         deleteButton.textContent = 'Delete'
         li.append(checkbox, span, deleteButton)
 
+        // Append nodes
         this.todoList.append(li)
       })
     }
@@ -203,7 +202,7 @@ class Controller {
     this.onTodoListChanged(this.model.todos)
   } 
 
-  onTodoListChanged = (todos) => {
+  onTodoListChanged = todos => {
     this.view.displayTodos(todos)
   }
 
@@ -211,8 +210,8 @@ class Controller {
     this.model.addTodo(todoText)
   }
 
-  HandleEditTodDo = (id, todoText) => {
-    this.model.deleteTodo(id)
+  handleEditTodDo = (id, todoText) => {
+    this.model.editTodo(id, todoText)
   }
 
   handleDeleteTodo = id => {
